@@ -1,0 +1,157 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class movedLabel extends JLabel implements Runnable {
+    public int  Xval = 1, Yval = 1;
+    public int x = 0, y = 0;
+    public Thread Movement;
+    private JPanel mainPanel;
+    private AtomicBoolean running = new AtomicBoolean(false);
+    Mutex mutex;
+
+
+    public movedLabel(JPanel panel, String value) {
+        super(value);
+        this.addMouseListener(new mouseDetect());
+        this.setDoubleBuffered(true);
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
+        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+        this.mainPanel = panel;
+    }
+    public movedLabel(JPanel panel, String value, int xPose, int yPose) {
+        super(value);
+        this.addMouseListener(new mouseDetect());
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
+        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+        this.mainPanel = panel;
+        this.x = xPose; this.y = yPose;
+        setBounds(this.x, this.y, 50, 50);
+    }
+
+    public void startThread() {
+        mutex = new Mutex(false);
+        this.running.set(true);
+        this.Movement = new Thread(this);
+        this.Movement.start();
+
+        System.out.println("Started " + Arrays.asList( mainPanel.getComponents() ).indexOf(this));
+    }
+    public void stop() {
+        this.running.set(false);
+    }
+    public void pause() {
+
+    }
+    public boolean isRunning() {
+        return this.running.get();
+    }
+    @Override
+    public void run() {
+        this.setLocation(x,y);
+        int FPS = 60;
+        double drawInterval = 10000 / FPS;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+        while (this.running.get()) {
+            mutex.step(); // pause method
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+            if (delta >= 1) {
+                // update
+                if (x + Xval + this.getWidth() > mainPanel.getWidth() || x + Xval < 0) {
+                    Xval *= -1;
+                }
+                if (y + Yval + this.getHeight() > mainPanel.getHeight() || y + Yval < 0) {
+                    Yval *= -1;
+                }
+                x += Xval;
+                y += Yval;
+                this.setLocation(x, y);
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                // repaint
+                this.repaint();
+                delta--;
+            }
+
+        }
+    }
+
+    class mouseDetect implements MouseListener{
+
+        @Override
+        public void mouseClicked(MouseEvent mouseEvent) {
+            if(mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                var list = Arrays.asList(mainPanel.getComponents());
+                System.out.println("Removed " + list.indexOf(mouseEvent.getSource()));
+                stop();
+                ((movedLabel)mouseEvent.getSource()).getParent().repaint();
+                ((movedLabel)mouseEvent.getSource()).getParent().remove(list.indexOf(mouseEvent.getSource()));
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent mouseEvent) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent mouseEvent) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent mouseEvent) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent mouseEvent) {
+
+        }
+    }
+    public class Mutex {
+        private final AtomicBoolean lock;
+        private final Object mutex;
+
+        public Mutex(boolean lock) {
+            this.lock = new AtomicBoolean(lock);
+            this.mutex = new Object();
+        }
+
+        public void step() {
+            if (lock.get()) synchronized(mutex) {
+                try {
+                    mutex.wait();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        public void lock() {
+            lock.set(true);
+        }
+
+        public void unlock() {
+            lock.set(false);
+
+            synchronized(mutex) {
+                mutex.notify();
+            }
+        }
+    }
+}
