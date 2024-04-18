@@ -5,21 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f91544f-e0c2-4cfb-9c04-df93a42a2fcb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/components.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/server.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/server/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/думат реализация" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../laba1_renew/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../laba1_renew/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../laba1_renew/src/movedLabel.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../laba1_renew/src/movedLabel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../laba1_renew/src/panel.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../laba1_renew/src/panel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,22 +54,22 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>20</line>
+          <line>21</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>8</line>
+          <line>7</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>9</line>
+          <line>8</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>11</line>
+          <line>10</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

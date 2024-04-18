@@ -2,7 +2,7 @@
 # Usings:
 ## Laba1:
 ```text
-java.swing.*
+javax.swing.*
 java.awt.*
 java.util.*
 ``` 
@@ -18,5 +18,16 @@ if(e.getButton() == MouseEvent.BUTTON1 && !paused) {
     System.out.println( "Found: " + e.getComponent().getName() );
 }
 ```
+
+## Laba2:
+```text
+javax.swing.*
+java.awt.*
+java.util.*
+import java.net.*; // для сервака и Socket и ServerSocket
+import java.io.*;
+```
+
+По-простому: на основе laba1 передать сериализированный xml данные о предыдущем состоянии
 
 
