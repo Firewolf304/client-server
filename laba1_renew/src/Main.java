@@ -1,9 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
+
+public class Main implements java.io.Serializable{
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -20,7 +19,7 @@ public class Main {
 
 
                 window.pack();
-                window.setResizable(true);
+                window.setResizable(false);
                 window.setLayout(null);
                 window.setIgnoreRepaint(false);
                 window.setVisible(true);

@@ -6,7 +6,7 @@ java.swing.*
 java.awt.*
 java.util.*
 ``` 
-По-простому: создание двух классов, где 1 - JPanel, другая - JLabel. Нужно их объединить по и addMouseListener отслеживать нажатия.
+По-простому: создание двух классов, где 1 - JPanel, другая - JLabel. Нужно их объединить по parent и по ```addMouseListener``` отслеживать нажатия.
 Остальное тупо создать кнопку, которая через Array.toList::forEach отсматривать все ```movedLabel```, которые вызывают либо ```mutex.lock```, либо ```mutex.unlock```, в зависимости от ```paused```, который также не дает создать объект через JPanel по условию:
 ```js
 if(e.getButton() == MouseEvent.BUTTON1 && !paused) {

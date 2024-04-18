@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.2" class="java.beans.XMLDecoder">
+ <object class="javax.swing.JFrame">
+  <void property="name">
+   <string>frame0</string>
+  </void>
+  <void property="title">
+   <string>Hello world</string>
+  </void>
+ </object>
+</java>

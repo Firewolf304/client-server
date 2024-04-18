@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class panel extends JPanel {
+public class panel extends JPanel implements java.io.Serializable {
     public ArrayList<movedLabel> massive;
     //Thread panelMovement;
     JPanel mainPanel = this;

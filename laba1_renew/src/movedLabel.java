@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class movedLabel extends JLabel implements Runnable {
+public class movedLabel extends JLabel implements Runnable, java.io.Serializable {
     public int  Xval = 1, Yval = 1;
     public int x = 0, y = 0;
     public Thread Movement;
@@ -55,37 +55,30 @@ public class movedLabel extends JLabel implements Runnable {
     }
     @Override
     public void run() {
+        Random rnd = new Random();
         this.setLocation(x,y);
-        int FPS = 60;
-        double drawInterval = 10000 / FPS;
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
         while (this.running.get()) {
             mutex.step(); // pause method
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            lastTime = currentTime;
-            if (delta >= 1) {
-                // update
-                if (x + Xval + this.getWidth() > mainPanel.getWidth() || x + Xval < 0) {
-                    Xval *= -1;
-                }
-                if (y + Yval + this.getHeight() > mainPanel.getHeight() || y + Yval < 0) {
-                    Yval *= -1;
-                }
-                x += Xval;
-                y += Yval;
-                this.setLocation(x, y);
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                // repaint
-                this.repaint();
-                delta--;
+            Xval = rnd.nextInt(21) - 10;
+            Yval = rnd.nextInt(21) - 10;
+
+            if (( x + Xval + this.getWidth() > mainPanel.getWidth() && x + Xval + this.getWidth() > x + (-Xval) + this.getWidth() ) || x + Xval < 0) {
+                Xval *= -1;
             }
+            if (( y + Yval + this.getHeight() > mainPanel.getHeight() && y + Yval + this.getHeight() > y + (-Yval) + this.getHeight()) || y + Yval < 0) {
+                Yval *= -1;
+            }
+            x += Xval;
+            y += Yval;
+            this.setLocation(x, y);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            // repaint
+            this.repaint();
 
         }
     }
