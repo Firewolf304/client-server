@@ -1,11 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="21.0.2" class="java.beans.XMLDecoder">
- <object class="javax.swing.JFrame">
-  <void property="name">
-   <string>frame0</string>
+ <object class="javax.swing.JButton" id="JButton0">
+  <string>Pause</string>
+  <void property="font">
+   <object class="java.awt.Font">
+    <string>Arial</string>
+    <int>1</int>
+    <int>12</int>
+   </object>
   </void>
-  <void property="title">
-   <string>Hello world</string>
+  <void property="size">
+   <object class="java.awt.Dimension" id="Dimension0">
+    <void class="java.awt.Dimension" method="getField">
+     <string>width</string>
+     <void method="set">
+      <object idref="Dimension0"/>
+      <int>100</int>
+     </void>
+    </void>
+    <void class="java.awt.Dimension" method="getField">
+     <string>height</string>
+     <void method="set">
+      <object idref="Dimension0"/>
+      <int>50</int>
+     </void>
+    </void>
+   </object>
+  </void>
+  <void id="Boolean0" property="autoscrolls"/>
+  <void id="Integer0" property="debugGraphicsOptions"/>
+ </object>
+ <object class="movedLabel" id="movedLabel0">
+  <void property="bounds">
+   <object class="java.awt.Rectangle" id="Rectangle0">
+    <void class="java.awt.Rectangle" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Rectangle0"/>
+      <int>441</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>y</string>
+     <void method="set">
+      <object idref="Rectangle0"/>
+      <int>137</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>width</string>
+     <void method="set">
+      <object idref="Rectangle0"/>
+      <int>50</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>height</string>
+     <void method="set">
+      <object idref="Rectangle0"/>
+      <int>50</int>
+     </void>
+    </void>
+   </object>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Xval</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>10</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Yval</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>8</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>x</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>441</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>y</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>137</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Movement</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <object class="java.lang.Thread">
+     <void property="name">
+      <string>Thread-0</string>
+     </void>
+     <void property="priority">
+      <int>6</int>
+     </void>
+    </object>
+   </void>
+  </void>
+  <void property="doubleBuffered">
+   <object idref="Boolean0"/>
+  </void>
+  <void property="text">
+   <string>123</string>
+  </void>
+ </object>
+ <object class="movedLabel" id="movedLabel1">
+  <void property="bounds">
+   <object class="java.awt.Rectangle" id="Rectangle1">
+    <void class="java.awt.Rectangle" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Rectangle1"/>
+      <int>218</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>y</string>
+     <void method="set">
+      <object idref="Rectangle1"/>
+      <int>121</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>width</string>
+     <void method="set">
+      <object idref="Rectangle1"/>
+      <int>50</int>
+     </void>
+    </void>
+    <void class="java.awt.Rectangle" method="getField">
+     <string>height</string>
+     <void method="set">
+      <object idref="Rectangle1"/>
+      <int>50</int>
+     </void>
+    </void>
+   </object>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Xval</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>-9</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Yval</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <object idref="Integer0"/>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>x</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>218</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>y</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>121</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Movement</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <object class="java.lang.Thread">
+     <void property="name">
+      <string>Thread-1</string>
+     </void>
+     <void property="priority">
+      <int>6</int>
+     </void>
+    </object>
+   </void>
+  </void>
+  <void property="doubleBuffered">
+   <object idref="Boolean0"/>
+  </void>
+  <void property="text">
+   <string>123</string>
+  </void>
+  <void property="x">
+   <int>213</int>
+  </void>
+  <void property="y">
+   <int>113</int>
   </void>
  </object>
 </java>

@@ -23,11 +23,26 @@ if(e.getButton() == MouseEvent.BUTTON1 && !paused) {
 ```text
 javax.swing.*
 java.awt.*
+import java.awt.event.*;
 java.util.*
 import java.net.*; // для сервака и Socket и ServerSocket
 import java.io.*;
+import java.beans.*;
+import java.net.*;  
 ```
 
-По-простому: на основе laba1 передать сериализированный xml данные о предыдущем состоянии
+По-простому: на основе laba1 передать сериализированный xml данные о последнем состоянии (сериализировать компоненты movedLabel, остальное сложнее из-за ивентов, но легче передавать просто сами классы):
+```js
+try {
+    while ((label = (movedLabel) decoder.readObject()) != null) {
+        label = new movedLabel(frameWindow, label.getText(), label.x, label.y);
+        frameWindow.add(label);
+        label.startThread();
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+}
+```
+
 
 
