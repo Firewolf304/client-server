@@ -2,6 +2,10 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,7 +16,8 @@ public class panel extends JPanel implements java.io.Serializable {
     boolean paused = false;
     public panel(int sizeX, int sizeY) {
         //this.setSize(sizeX, sizeY);
-        setLayout(null);
+        super(new FlowLayout(FlowLayout.LEFT));
+        //setLayout(null);
         this.setPreferredSize(new Dimension( sizeX, sizeY));
         this.setDoubleBuffered(true);
         this.massive = new ArrayList<>();
@@ -21,7 +26,7 @@ public class panel extends JPanel implements java.io.Serializable {
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Click in " + e.getX() + ":" + e.getY());
                 if(e.getButton() == MouseEvent.BUTTON1 && !paused) {
-                    var label = new movedLabel(mainPanel, "123", e.getX(), e.getY());
+                    var label = new movedLabel(mainPanel, "3123123", e.getX(), e.getY());
                     add(label);
                     label.startThread();
                     repaint();
@@ -30,7 +35,6 @@ public class panel extends JPanel implements java.io.Serializable {
                 }
             }
         });
-
         var pauseButton = new JButton("Pause");
         pauseButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -52,6 +56,28 @@ public class panel extends JPanel implements java.io.Serializable {
         pauseButton.setSize(new Dimension(100, 50));
         add(pauseButton, BorderLayout.WEST);
 
+        var save = new JButton("Save");
+        save.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("save.xml")));
+                    recursiveEncoder(mainPanel.getComponents(), encoder);
+                    encoder.close();
+                    System.out.println("Saved");
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        save.setFont(new Font("Arial", Font.BOLD, 12));
+        save.setPreferredSize(new Dimension(100, 50));
+        save.setSize(new Dimension(100, 50));
+        save.setLayout(null);
+        add(save);
+
+
 
     }
     public void pauseComponentThreads() {
@@ -71,6 +97,25 @@ public class panel extends JPanel implements java.io.Serializable {
                 ((movedLabel)component).mutex.unlock();
             }
         } );
+    }
+    public void recursiveEncoder(Component component, XMLEncoder enc) {
+        var name = component.getClass().getName();
+        if(name == "movedLabel")
+            enc.writeObject(component);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                if (child instanceof JComponent) {
+                    recursiveEncoder(child, enc);
+                }
+            }
+        }
+    }
+    public void recursiveEncoder(Component[] component, XMLEncoder enc) {
+        for (Component child : component) {
+            if (child instanceof JComponent) {
+                recursiveEncoder(child, enc);
+            }
+        }
     }
 
 

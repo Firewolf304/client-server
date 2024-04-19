@@ -5,16 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f91544f-e0c2-4cfb-9c04-df93a42a2fcb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/example.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/movedLabel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/panel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/movedLabel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/panel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/components.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/components.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
