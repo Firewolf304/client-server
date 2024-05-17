@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
@@ -9,10 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class movedLabel extends JLabel implements Runnable, java.io.Serializable {
     public int  Xval = 1, Yval = 1;
     public int x = 0, y = 0;
-    public Thread Movement;
-    public JPanel mainPanel;
+    public transient Thread Movement;
+    private JPanel mainPanel;
     private AtomicBoolean running = new AtomicBoolean(false);
-    Mutex mutex;
+    transient Mutex mutex;
 
     public movedLabel() {
         super();
@@ -20,7 +21,7 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
         this.setDoubleBuffered(true);
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);
-        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+
     }
     public movedLabel(JPanel panel, String value) {
         super(value);
@@ -28,7 +29,6 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
         this.setDoubleBuffered(true);
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);
-        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
         this.mainPanel = panel;
     }
     public movedLabel(JPanel panel, String value, int xPose, int yPose) {
@@ -36,13 +36,13 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
         this.addMouseListener(new mouseDetect());
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);
-        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
         this.mainPanel = panel;
         this.x = xPose; this.y = yPose;
         setBounds(this.x, this.y, 50, 50);
     }
 
     public void startThread() {
+        this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
         mutex = new Mutex(false);
         this.running.set(true);
         this.Movement = new Thread(this);
@@ -51,12 +51,16 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
         System.out.println("Started " + Arrays.asList( mainPanel.getComponents() ).indexOf(this));
     }
     public void stop() {
+        Movement.interrupt();
         this.running.set(false);
     }
+    public void pause() {
 
+    }
     public boolean isRunning() {
         return this.running.get();
     }
+
     @Override
     public void run() {
         Random rnd = new Random();
@@ -87,7 +91,7 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
         }
     }
 
-    class mouseDetect implements MouseListener, java.io.Serializable{
+    class mouseDetect implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
@@ -150,21 +154,5 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
                 mutex.notify();
             }
         }
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 }

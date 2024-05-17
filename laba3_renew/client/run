@@ -1,0 +1,17 @@
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Путь к исполняемому файлу Java
+JAVA_PATH="/usr/lib/jvm/java-21-openjdk/bin/java"
+
+# Путь к файлу idea_rt.jar
+IDEA_RT_JAR_PATH="/home/firewolf304/.local/share/JetBrains/Toolbox/apps/intellij-idea-community-edition/lib/idea_rt.jar"
+
+
+# Путь к папке bin IntelliJ IDEA
+IDEA_BIN_PATH="$CURRENT_DIR/bin"
+
+# Путь к файлу Main.class
+MAIN_CLASS_PATH="$CURRENT_DIR/src/Main.class"
+
+# Запуск Java с заданными параметрами
+"$JAVA_PATH" -javaagent:"$IDEA_RT_JAR_PATH"=46571:"$IDEA_BIN_PATH" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath "$MAIN_CLASS_PATH"

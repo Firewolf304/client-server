@@ -1,7 +1,9 @@
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.beans.XMLEncoder;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,9 +12,14 @@ public class panel extends JPanel implements java.io.Serializable {
     //Thread panelMovement;
     JPanel mainPanel = this;
     boolean paused = false;
+    public socket client_server;
     public panel(int sizeX, int sizeY) {
         //this.setSize(sizeX, sizeY);
-        setLayout(null);
+        super(new FlowLayout(FlowLayout.LEFT));
+        try {
+            client_server = new socket("127.0.0.1", 8080, mainPanel);
+        } catch (Exception exp) { exp.printStackTrace();}
+        //setLayout(null);
         this.setPreferredSize(new Dimension( sizeX, sizeY));
         this.setDoubleBuffered(true);
         this.massive = new ArrayList<>();
@@ -21,7 +28,7 @@ public class panel extends JPanel implements java.io.Serializable {
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Click in " + e.getX() + ":" + e.getY());
                 if(e.getButton() == MouseEvent.BUTTON1 && !paused) {
-                    var label = new movedLabel(mainPanel, "123", e.getX(), e.getY());
+                    var label = new movedLabel(mainPanel, "3123123", e.getX(), e.getY());
                     add(label);
                     label.startThread();
                     repaint();
@@ -30,7 +37,6 @@ public class panel extends JPanel implements java.io.Serializable {
                 }
             }
         });
-
         var pauseButton = new JButton("Pause");
         pauseButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -52,6 +58,68 @@ public class panel extends JPanel implements java.io.Serializable {
         pauseButton.setSize(new Dimension(100, 50));
         add(pauseButton, BorderLayout.WEST);
 
+        var save = new JButton("Save");
+        save.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("save.xml")));
+                    recursiveEncoder(mainPanel.getComponents(), encoder);
+                    encoder.close();
+                    System.out.println("Saved");
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        save.setFont(new Font("Arial", Font.BOLD, 12));
+        save.setPreferredSize(new Dimension(100, 50));
+        save.setSize(new Dimension(100, 50));
+        save.setLayout(null);
+        add(save);
+        var saveBinar = new JButton("SaveBin");
+        saveBinar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    var file = new FileOutputStream("save.bin");
+                    var stream = new ObjectOutputStream(file);
+                    recursiveObjStream(mainPanel.getComponents(), stream);
+                    stream.close();
+                    System.out.println("Saved");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        saveBinar.setFont(new Font("Arial", Font.BOLD, 12));
+        saveBinar.setPreferredSize(new Dimension(100, 50));
+        saveBinar.setSize(new Dimension(100, 50));
+        saveBinar.setLayout(null);
+        add(saveBinar);
+
+        var sync = new JButton("Sync");
+        sync.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    if(client_server.message.isConnected() && !paused)
+                        client_server.send("sync ");
+                } catch (Exception ex) {
+                    System.out.println("No channels");
+                }
+            }
+        });
+        sync.setFont(new Font("Arial", Font.BOLD, 12));
+        sync.setPreferredSize(new Dimension(100, 50));
+        sync.setSize(new Dimension(100, 50));
+        sync.setLayout(null);
+        add(sync);
+
+
 
     }
     public void pauseComponentThreads() {
@@ -71,6 +139,44 @@ public class panel extends JPanel implements java.io.Serializable {
                 ((movedLabel)component).mutex.unlock();
             }
         } );
+    }
+    public void recursiveEncoder(Component component, XMLEncoder enc) {
+        var name = component.getClass().getName();
+        if(name == "movedLabel")
+            enc.writeObject(component);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                if (child instanceof JComponent) {
+                    recursiveEncoder(child, enc);
+                }
+            }
+        }
+    }
+    public void recursiveEncoder(Component[] component, XMLEncoder enc) {
+        for (Component child : component) {
+            if (child instanceof JComponent) {
+                recursiveEncoder(child, enc);
+            }
+        }
+    }
+    public void recursiveObjStream(Component component, ObjectOutputStream stream) throws IOException {
+        var name = component.getClass().getName();
+        if(name == "movedLabel")
+            stream.writeObject(component);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                if (child instanceof JComponent) {
+                    recursiveObjStream(child, stream);
+                }
+            }
+        }
+    }
+    public void recursiveObjStream(Component[] component, ObjectOutputStream stream) throws IOException {
+        for (Component child : component) {
+            if (child instanceof JComponent) {
+                recursiveObjStream(child, stream);
+            }
+        }
     }
 
 

@@ -44,5 +44,46 @@ try {
 }
 ```
 
+## Laba3:
+```text
+import javax.swing.*;
+import java.awt.*;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.List;
+```
+Ключевые файлы в server и client, просто серваку все хавает, а через него в выбранный клиент и обратно спрашиваему клиенту
+```js
+//Тут нет устойчивых важностей, кроме
+Socket message = server.accept();
+System.out.println("New client: " + message.getInetAddress().getHostAddress() + ":" + message.getPort());
+threadList.add(
+        new Objector(
+                threadList.size(),
+                message,
+                new Thread(() -> {
+                    try {
+                        RunThread.run(threadList.size()-1);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+        ));
+added = true;
+threadList.getLast().thread.start();
+for(var obj : this.threadList) {
+    if(obj.running.get()) {
+        var out = new BufferedWriter(new OutputStreamWriter(obj.connection.getOutputStream()));
+        send(out, "size " + String.valueOf(threadList.size()));
+    }
+}
+```
 
 
