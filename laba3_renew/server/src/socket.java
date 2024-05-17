@@ -1,12 +1,15 @@
 import javax.swing.*;
 import java.io.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class socket {
 
-    public DatagramSocket server;
+    public ServerSocket server;
     String address = "127.0.0.1";
     int port = 8080;
     public ArrayList<Objector> threadList;
@@ -14,7 +17,7 @@ public class socket {
     public socket(String address, int port) throws Exception {
         port = port;
         address = address;
-        server = new DatagramSocket(port, InetAddress.getByName(address));
+        server = new ServerSocket(port, 0, InetAddress.getByName(address));
         threadList = new ArrayList<Objector>();
         while(true) {
             Boolean added = false;
@@ -46,19 +49,6 @@ public class socket {
                 if(added) {
                     threadList.removeLast();
                 }
-            }
-        }
-    }
-    public void UpdateList() throws Exception {
-        for(var thread : threadList) {
-            if(!thread.running.get()) {
-                threadList.remove(thread);
-            }
-        }
-        for(var obj : this.threadList) {
-            if(obj.running.get()) {
-                var out = new BufferedWriter(new OutputStreamWriter(obj.connection.getOutputStream()));
-                send(out, "size " + String.valueOf(threadList.size()));
             }
         }
     }
@@ -107,7 +97,6 @@ public class socket {
                 e.printStackTrace();
                 object.running.set(false);
                 Thread.currentThread().interrupt();
-                UpdateList();
             }
         }
         /*while (running.get()) {
@@ -166,7 +155,6 @@ public class socket {
             this.running.set(true);
             this.connection = connection;
         }
-        private byte[] buf = new byte[256];
         public Socket connection;
         public AtomicBoolean running = new AtomicBoolean(false);
         public int id = -1;

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -105,12 +106,13 @@ public class panel extends JPanel implements java.io.Serializable {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 try {
-                    if(client_server.message.isConnected() && !paused) {
+                    if(client_server.message.connection.isConnected() && !paused) {
                         //client_server.send("sync ");
                         Component[] components = mainPanel.getComponents();
                         for (Component component : components) {
                             if (component instanceof JComboBox) {
-                                client_server.send("sync " + ((ComboItem) ((JComboBox<ComboItem>) component).getSelectedItem()).getValue());
+                                client_server.message.buf = ("sync " + ((ComboItem) ((JComboBox<ComboItem>) component).getSelectedItem()).getValue()).getBytes();
+                                client_server.send(client_server.message, InetAddress.getByName("127.0.0.1"), 8080);
                                 break;
                             }
                         }
@@ -136,7 +138,6 @@ public class panel extends JPanel implements java.io.Serializable {
         try {
             client_server = new socket("127.0.0.1", 8080, mainPanel);
         } catch (Exception exp) { exp.printStackTrace();}
-
     }
     public void pauseComponentThreads() {
         var list = Arrays.asList(mainPanel.getComponents());
