@@ -1,22 +1,36 @@
 import javax.swing.*;
 import java.awt.*;
 import java.beans.XMLDecoder;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 
 public class Main implements java.io.Serializable{
     private static panel frameWindow;
     private static void runSave() {
         try {
-            XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream("save.xml")));
+            var file = new FileInputStream("save.bin");
+            var stream = new ObjectInputStream(file);
+            movedLabel label;
+            while ((label = (movedLabel)stream.readObject()) != null) {
+                var temp = new movedLabel(frameWindow, label.getText(), label.x, label.y);
+                frameWindow.add(temp);
+                temp.startThread();
+            }
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            var file = new FileInputStream("save.xml");
+            XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(file));
             movedLabel label;
             while ((label = (movedLabel) decoder.readObject()) != null) {
                 var temp = new movedLabel(frameWindow, label.getText(), label.x, label.y);
                 frameWindow.add(temp);
                 temp.startThread();
             }
+            return;
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,11 +1,15 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.beans.XMLEncoder;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Random;
 
 public class panel extends JPanel implements java.io.Serializable {
     public ArrayList<movedLabel> massive;
@@ -19,15 +23,37 @@ public class panel extends JPanel implements java.io.Serializable {
         this.setPreferredSize(new Dimension( sizeX, sizeY));
         this.setDoubleBuffered(true);
         this.massive = new ArrayList<>();
+        var timer = new Timer(0, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                for(var item : mainPanel.getComponents()) {
+                    if(item instanceof movedLabel )
+                        item.setLocation( ((movedLabel)item).x, ((movedLabel)item).y);
+                }
+                repaint();
+            }
+        });
+        timer.start();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Click in " + e.getX() + ":" + e.getY());
                 if(e.getButton() == MouseEvent.BUTTON1 && !paused) {
-                    var label = new movedLabel(mainPanel, "3123123", e.getX(), e.getY());
+
+                    movedLabel label = null;
+                    label = new movedLabel(mainPanel, e.getX(), e.getY());
+                    Random random = new Random();
+                    int numVertices = random.nextInt(30) + 12;
+                    int[] xPoints = new int[numVertices];
+                    int[] yPoints = new int[numVertices];
+                    for (int i = 0; i < numVertices; i++) {
+                        xPoints[i] = random.nextInt(getWidth() - 10) + 10;
+                        yPoints[i] = random.nextInt(getHeight() - 10) + 10;
+                    }
+                    label.setIcon(createRandomPolygonIcon(300, 300, xPoints, yPoints));
+                    label.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
                     add(label);
                     label.startThread();
-                    repaint();
                 } else if(e.getButton() == MouseEvent.BUTTON3) { // заглушка
                     System.out.println( "Found: " + e.getComponent().getName() );
                 }
@@ -41,20 +67,22 @@ public class panel extends JPanel implements java.io.Serializable {
                 //var panelComps = mainPanel.getComponents();
                 // ((movedLabel) panelComps[1]).mutex.lock();
                 if(!paused) {
+                    timer.stop();
                     pauseComponentThreads();
                     paused = !paused;
                 } else {
+                    timer.start();
                     resumeComponentThreads();
                     paused = !paused;
                 }
             }
         });
         pauseButton.setFont(new Font("Arial", Font.BOLD, 12));
-        pauseButton.setPreferredSize(new Dimension(100, 50));
-        pauseButton.setSize(new Dimension(100, 50));
+        pauseButton.setPreferredSize(new Dimension(75, 25));
+        pauseButton.setSize(new Dimension(75, 25));
         add(pauseButton, BorderLayout.WEST);
 
-        var save = new JButton("Save");
+        var save = new JButton("SaveXML");
         save.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -70,11 +98,11 @@ public class panel extends JPanel implements java.io.Serializable {
             }
         });
         save.setFont(new Font("Arial", Font.BOLD, 12));
-        save.setPreferredSize(new Dimension(100, 50));
-        save.setSize(new Dimension(100, 50));
+        save.setPreferredSize(new Dimension(75, 25));
+        save.setSize(new Dimension(75, 25));
         save.setLayout(null);
         add(save);
-        var saveBinar = new JButton("SaveBin");
+        var saveBinar = new JButton("SaveBinary");
         saveBinar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -91,8 +119,8 @@ public class panel extends JPanel implements java.io.Serializable {
             }
         });
         saveBinar.setFont(new Font("Arial", Font.BOLD, 12));
-        saveBinar.setPreferredSize(new Dimension(100, 50));
-        saveBinar.setSize(new Dimension(100, 50));
+        saveBinar.setPreferredSize(new Dimension(75, 25));
+        saveBinar.setSize(new Dimension(75, 25));
         saveBinar.setLayout(null);
         add(saveBinar);
 
@@ -121,6 +149,7 @@ public class panel extends JPanel implements java.io.Serializable {
         var name = component.getClass().getName();
         if(name == "movedLabel")
             enc.writeObject(component);
+
         if (component instanceof Container) {
             for (Component child : ((Container) component).getComponents()) {
                 if (child instanceof JComponent) {
@@ -154,6 +183,30 @@ public class panel extends JPanel implements java.io.Serializable {
                 recursiveObjStream(child, stream);
             }
         }
+    }
+    private static ImageIcon createRandomPolygonIcon(int width, int height, int[] xPoints, int[] yPoints) {
+        Image image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = (Graphics2D) image.getGraphics();
+
+        g2d.setColor(Color.BLUE);
+        g2d.fillPolygon(xPoints, yPoints, xPoints.length);
+        g2d.dispose();
+
+        return new ImageIcon(image);
+    }
+    private static String imageIconToBase64(ImageIcon icon) {
+        Image image = icon.getImage();
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+        g2d.drawImage(image, 0, 0, null);
+        g2d.dispose();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "png", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
 

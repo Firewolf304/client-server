@@ -64,7 +64,7 @@ public class socket {
                     case "size" : {
                         System.out.println("It is " + String.valueOf(threadList.size()));
                         send( out, "size " + String.valueOf(threadList.size()) );
-                    }
+                    }break;
                     case "sync" : {
                         System.out.println("Check client");
                         int request = Integer.valueOf(line[1]);
@@ -78,7 +78,7 @@ public class socket {
                                 queue.add(new pair<>(sender.id, threadList.get(id).id));
                             }
                         }
-                    }
+                    }break;
                     case "get": {
                         for(var i : queue) {
                             if(i.getFirst() == object.id) {
@@ -90,7 +90,11 @@ public class socket {
                                 break;
                             }
                         }
-                    }
+                    } break;
+                    case "point" : {
+                        System.out.println("point is " + String.valueOf(threadList.size()));
+                        send( out, "point " + String.valueOf(object.id) );
+                    }break;
                 }
             } catch (Exception e) {
                 System.out.println("Exception: " + e.getMessage());
