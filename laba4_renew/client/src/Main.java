@@ -46,7 +46,7 @@ public class Main implements java.io.Serializable{
                 //this.pack();
 
                 //window.setSize(500,500);
-                frameWindow = new panel(500, 500);
+                frameWindow = new panel(600, 500);
 
                 window.add(frameWindow);
 

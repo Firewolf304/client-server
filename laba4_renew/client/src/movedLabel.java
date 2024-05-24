@@ -86,7 +86,7 @@ public class movedLabel extends JLabel implements Runnable, java.io.Serializable
             }
 
             // repaint
-            this.repaint();
+            //this.repaint();
 
         }
     }

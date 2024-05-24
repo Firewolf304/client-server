@@ -23,30 +23,32 @@ public class socket {
     MyRunnable RunThread = ( object ) -> {
         while(object.running.get()) {
             try {
+                object.buf = new byte[5000];
                 DatagramPacket 	packet = new DatagramPacket(object.buf, object.buf.length);
                 object.connection.receive(packet);
-                String[] line = new String(packet.getData(), packet.getOffset(), packet.getLength()).split(" ",3 );
+                String[] line = new String(packet.getData(), 0, packet.getLength()).split(" ",2 );
                 System.out.println("Request from " + packet.getPort() + ": " + line[0]);
                 switch (line[0]) {
-                    case "sync" : {
+                    /*case "sync" : {
                         ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
                         XMLEncoder encoder = new XMLEncoder(xmlOut);
                         recursiveEncoder(mainPanel, encoder);
                         encoder.close();
-                        object.buf = ("get " + line[1] + " " + Base64.getEncoder().encodeToString(xmlOut.toString().replace('\n', '\0').trim().getBytes())).getBytes();
+                        object.buf = ("sync " + Base64.getEncoder().encodeToString(xmlOut.toString().trim().getBytes())).getBytes();
                         //object.buf = ("get " + xmlOut.toString().replace('\n', ' ').trim()).getBytes();
-                        send(object, packet.getAddress(), packet.getPort());
+                        send(object, InetAddress.getByName(this.address), this.port);
                         System.out.println("Sending data");
-                    } break;
+                    } break;*/
                     case "get" : {
-                        System.out.println("Getted hash");
-                        System.out.println( line[2] );
-                        line[2] = new String(Base64.getDecoder().decode(line[2].getBytes()));
-                        removeAllComponentsOfType(mainPanel, movedLabel.class);
-                        ByteArrayInputStream xmlIn = new ByteArrayInputStream(line[2].getBytes());
-                        XMLDecoder decoder = new XMLDecoder(xmlIn);
-                        movedLabel label;
                         try {
+
+                            line[1] =  decompressGzipBase64ToString(line[1]);
+                            System.out.println("Getted hash " + line[1].length());
+                            System.out.println( line[1] );
+                            removeAllComponentsOfType(mainPanel, movedLabel.class);
+                            ByteArrayInputStream xmlIn = new ByteArrayInputStream(line[1].getBytes());
+                            XMLDecoder decoder = new XMLDecoder(xmlIn);
+                            movedLabel label;
                             while ((label = (movedLabel) decoder.readObject()) != null) {
                                 label = new movedLabel(mainPanel, label.getText(), label.x, label.y);
                                 mainPanel.add(label);
@@ -74,6 +76,8 @@ public class socket {
                         //throw new Exception("Already used");
                     } break;
                 }
+
+
             } catch (Exception e) {
                 System.out.println("Exception: " + e.getMessage());
                 e.printStackTrace();
@@ -199,45 +203,29 @@ public class socket {
             this.running.set(true);
             this.connection = connection;
         }
-        public byte[] buf = new byte[5000];
+        public byte[] buf = new byte[62000];
         public DatagramSocket connection;
         public DatagramPacket packet;
         public AtomicBoolean running = new AtomicBoolean(false);
         public int id = -1;
         public Thread thread;
     }
-    public static byte[] compressStringToGzip(String uncompressedString) throws IOException {
+    public static String decompressGzipBase64ToString(String compressedBase64) throws IOException {
+        if (compressedBase64 == null || compressedBase64.length() == 0) {
+            return null;
+        }
+        byte[] compressedBytes = Base64.getDecoder().decode(compressedBase64);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedBytes);
+        GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
-            gzipOutputStream.write(uncompressedString.getBytes());
-        }
-        return byteArrayOutputStream.toByteArray();
-    }
-    public static byte[] decompressGzipToString(byte[] compressedBytes) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressedBytes))) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gzipInputStream.read(buffer)) > 0) {
-                byteArrayOutputStream.write(buffer, 0, len);
-            }
-        }
-        return byteArrayOutputStream.toByteArray();
-    }
-    public static String decompressString(String compressedString) throws IOException {
-        byte[] compressedBytes = compressedString.getBytes(StandardCharsets.ISO_8859_1);
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedBytes);
-             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-             GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream)) {
 
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gzipInputStream.read(buffer)) > 0) {
-                byteArrayOutputStream.write(buffer, 0, len);
-            }
-
-            return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = gzipInputStream.read(buffer)) != -1) {
+            byteArrayOutputStream.write(buffer, 0, len);
         }
+        gzipInputStream.close();
+        return byteArrayOutputStream.toString(StandardCharsets.UTF_8.name());
     }
 
 }

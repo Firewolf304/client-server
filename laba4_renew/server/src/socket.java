@@ -2,8 +2,12 @@ import javax.swing.*;
 import javax.swing.text.Document;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class socket {
     int port = 8080;
@@ -67,10 +71,11 @@ public class socket {
         while(object.running.get()) {
 
             try {
+                object.buf = new byte[5000];
                 DatagramPacket packet = new DatagramPacket(object.buf, object.buf.length);
                 object.connection.receive(packet);
                 object.packet = packet;
-                String[] line = new String(packet.getData(), packet.getOffset(), packet.getLength()).split(" ", 3);
+                String[] line = new String(packet.getData(), packet.getOffset(), packet.getLength()).split(" ", 2);
                 System.out.println("Request from " + object.id + "(" + object.packet.getPort() + "): " + line[0]);
                 switch (line[0]) {
                     case "size": {
@@ -114,20 +119,27 @@ public class socket {
                         send(object, packet.getAddress(), packet.getPort());
                     } break;
                     case "sync": {
-                        System.out.println("Check client");
-                        int request = Integer.valueOf(line[1]);
-                        if (request > 0 && request < threadList.size()) {
-                            var sender = threadList.get(request);
-                            if (sender.running.get()) {
-                                sender.buf = (String.join(" ", line)).getBytes();
-                                send(sender, sender.packet.getAddress(), sender.packet.getPort());
-                                System.out.println("Asked");
-                                //send(sender, sender.packet.getAddress(), sender.packet.getPort()); // redirect
-                                queue.add(new pair<>(sender.id, threadList.get(id).id));
-                            }
+                        //int request = Integer.valueOf(line[1]);
+                        var file = new File("save.xml");
+                        if(!file.exists()) {
+                            file.createNewFile();
                         }
+                        var fw = new FileWriter(file.getAbsoluteFile());
+                        var bw = new BufferedWriter(fw);
+                        bw.write( decompressGzipBase64ToString(line[1]) );
+                        bw.close();
+                        fw.close();
+                        System.out.println("Saved " + line[1].length());
+
                     } break;
                     case "get": {
+                        var file = new FileInputStream("save.xml");
+                        String red = readFromInputStream(file);
+                        object.buf = ("get " + compressStringToGzipBase64(red)).getBytes();
+                        //object.connection.send(new DatagramPacket(object.buf, object.buf.length, object.packet.getAddress(), object.packet.getPort()));
+                        send(object, object.packet.getAddress(), object.packet.getPort());
+                        System.out.println("Length: " + object.buf.length);
+                        /*
                         for (var i : queue) {
                             if (i.getFirst() == Integer.valueOf(line[1])) {
                                 var sender = threadList.get(i.getSecond());
@@ -140,6 +152,7 @@ public class socket {
                                 break;
                             }
                         }
+                        */
                     } break;
                 }
             } catch (Exception e) {
@@ -152,14 +165,16 @@ public class socket {
         // add server try
     };
 
-    public void send(Objector data, InetAddress destAddr, int destPort) {
+    public void send(Objector data, InetAddress destAddr, int destPort) throws IOException {
         DatagramPacket		pkt;
 
         // TO-DO: build the datagram packet and send it to the server
         pkt = new DatagramPacket(data.buf, data.buf.length, destAddr, destPort);
+        var receive = new DatagramPacket(data.buf, data.buf.length);
         try {
             data.connection.send(pkt);
         } catch (IOException e) {
+            //data.connection.receive(receive);
             System.out.println("Error transmitting packet over network.");
         }
     }
@@ -173,11 +188,51 @@ public class socket {
             this.running.set(true);
             this.connection = connection;
         }
-        public byte[] buf = new byte[5000];
+        public byte[] buf = new byte[62000];
         public DatagramSocket connection;
         public AtomicBoolean running = new AtomicBoolean(false);
         public int id = -1;
         public Thread thread;
         public DatagramPacket packet;
+    }
+    private String readFromInputStream(InputStream inputStream)
+            throws IOException {
+        StringBuilder resultStringBuilder = new StringBuilder();
+        try (BufferedReader br
+                     = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                resultStringBuilder.append(line).append("\n");
+            }
+        }
+        return resultStringBuilder.toString();
+    }
+    public static String decompressGzipBase64ToString(String compressedBase64) throws IOException {
+        if (compressedBase64 == null || compressedBase64.length() == 0) {
+            return null;
+        }
+        byte[] compressedBytes = Base64.getDecoder().decode(compressedBase64);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedBytes);
+        GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = gzipInputStream.read(buffer)) != -1) {
+            byteArrayOutputStream.write(buffer, 0, len);
+        }
+        gzipInputStream.close();
+        return byteArrayOutputStream.toString(StandardCharsets.UTF_8.name());
+    }
+    public static String compressStringToGzipBase64(String str) throws IOException {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+        gzipOutputStream.write(str.getBytes(StandardCharsets.UTF_8));
+        gzipOutputStream.close();
+        byte[] compressedBytes = byteArrayOutputStream.toByteArray();
+        return Base64.getEncoder().encodeToString(compressedBytes);
     }
 }

@@ -5,8 +5,11 @@ import java.awt.event.*;
 import java.beans.XMLEncoder;
 import java.io.*;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.zip.GZIPOutputStream;
 
 public class panel extends JPanel implements java.io.Serializable {
     public ArrayList<movedLabel> massive;
@@ -23,6 +26,17 @@ public class panel extends JPanel implements java.io.Serializable {
         this.setPreferredSize(new Dimension( sizeX, sizeY));
         this.setDoubleBuffered(true);
         this.massive = new ArrayList<>();
+        var timer = new Timer(0, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                for(var item : mainPanel.getComponents()) {
+                    if(item instanceof movedLabel )
+                        item.setLocation( ((movedLabel)item).x, ((movedLabel)item).y);
+                }
+                repaint();
+            }
+        });
+        timer.start();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -108,14 +122,15 @@ public class panel extends JPanel implements java.io.Serializable {
                 try {
                     if(client_server.message.connection.isConnected() && !paused) {
                         //client_server.send("sync ");
-                        Component[] components = mainPanel.getComponents();
-                        for (Component component : components) {
-                            if (component instanceof JComboBox) {
-                                client_server.message.buf = ("sync " + ((ComboItem) ((JComboBox<ComboItem>) component).getSelectedItem()).getValue()).getBytes();
-                                client_server.send(client_server.message, InetAddress.getByName("127.0.0.1"), 8080);
-                                break;
-                            }
-                        }
+                        ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
+                        XMLEncoder encoder = new XMLEncoder(xmlOut);
+                        recursiveEncoder(mainPanel, encoder);
+                        encoder.close();
+                        var text = xmlOut.toString().replace('\n', ' ').trim();
+                        System.out.println("Sended: " + text);
+                        client_server.message.buf = ("sync " + compressStringToGzipBase64(text)).getBytes();
+                        //client_server.message.buf = ("sync " + Base64.getEncoder().encodeToString( xmlOut.toString().trim().getBytes())).getBytes();
+                        client_server.send(client_server.message, InetAddress.getByName("127.0.0.1"), 8080);
                     }
                 } catch (Exception ex) {
                     System.out.println("No channels");
@@ -127,14 +142,27 @@ public class panel extends JPanel implements java.io.Serializable {
         sync.setSize(new Dimension(100, 50));
         sync.setLayout(null);
         add(sync);
+        var get = new JButton("Get");
+        get.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    if(client_server.message.connection.isConnected() && !paused) {
+                        client_server.message.buf = ("get").getBytes();
+                        client_server.send(client_server.message, InetAddress.getByName("127.0.0.1"), 8080);
+                    }
+                } catch (Exception ex) {
+                    System.out.println("No channels");
+                }
+            }
+        });
+        get.setFont(new Font("Arial", Font.BOLD, 12));
+        get.setPreferredSize(new Dimension(100, 50));
+        get.setSize(new Dimension(100, 50));
+        get.setLayout(null);
+        add(get);
 
-
-        var select = new JComboBox<ComboItem>();
-        select.setFont(new Font("Arial", Font.BOLD, 6));
-        select.setPreferredSize(new Dimension(50, 25));
-        select.setSize(new Dimension(50, 25));
-        select.setLayout(null);
-        add(select);
         try {
             client_server = new socket("127.0.0.1", 8080, mainPanel);
         } catch (Exception exp) { exp.printStackTrace();}
@@ -194,6 +222,17 @@ public class panel extends JPanel implements java.io.Serializable {
                 recursiveObjStream(child, stream);
             }
         }
+    }
+    public static String compressStringToGzipBase64(String str) throws IOException {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+        gzipOutputStream.write(str.getBytes(StandardCharsets.UTF_8));
+        gzipOutputStream.close();
+        byte[] compressedBytes = byteArrayOutputStream.toByteArray();
+        return Base64.getEncoder().encodeToString(compressedBytes);
     }
 
 
