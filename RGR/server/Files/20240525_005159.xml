@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.2" class="java.beans.XMLDecoder">
+ <object class="movedLabel" id="movedLabel0">
+  <void class="movedLabel" method="getField">
+   <string>Xval</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>7</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Yval</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>7</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>x</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>177</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>y</string>
+   <void method="set">
+    <object idref="movedLabel0"/>
+    <int>99</int>
+   </void>
+  </void>
+  <void id="Boolean0" property="autoscrolls"/>
+  <void property="border">
+   <object class="javax.swing.border.LineBorder">
+    <object class="java.awt.Color" id="Color0">
+     <int>0</int>
+     <int>255</int>
+     <int>0</int>
+     <int>255</int>
+    </object>
+    <int>3</int>
+    <object idref="Boolean0"/>
+   </object>
+  </void>
+  <void property="doubleBuffered">
+   <object idref="Boolean0"/>
+  </void>
+  <void property="text">
+   <string>3123123</string>
+  </void>
+ </object>
+ <object class="movedLabel" id="movedLabel1">
+  <void class="movedLabel" method="getField">
+   <string>Xval</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>9</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>Yval</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>-4</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>x</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>224</int>
+   </void>
+  </void>
+  <void class="movedLabel" method="getField">
+   <string>y</string>
+   <void method="set">
+    <object idref="movedLabel1"/>
+    <int>203</int>
+   </void>
+  </void>
+  <void property="border">
+   <object class="javax.swing.border.LineBorder">
+    <object idref="Color0"/>
+    <int>3</int>
+    <object idref="Boolean0"/>
+   </object>
+  </void>
+  <void property="doubleBuffered">
+   <object idref="Boolean0"/>
+  </void>
+  <void property="text">
+   <string>3123123</string>
+  </void>
+ </object>
+</java>

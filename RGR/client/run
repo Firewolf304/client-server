@@ -1,0 +1,2 @@
+cd out/production/laba1_renew
+java -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath /home/firewolf304/IdeaProjects/client-servers/RGR/client/out/production/laba1_renew:/home/firewolf304/.m2/repository/javax/json/javax.json-api/1.1.4/javax.json-api-1.1.4.jar:/home/firewolf304/.m2/repository/org/glassfish/javax.json/1.1.4/javax.json-1.1.4.jar Main
